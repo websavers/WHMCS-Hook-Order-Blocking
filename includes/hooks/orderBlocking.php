@@ -25,12 +25,14 @@ add_hook("ShoppingCartValidateCheckout", 1, function($vars){
     $client = Menu::context("client");
     if (is_null($client)) {
         if (BLOCK_UNVERIFIED_EMAILS && BLOCK_IF_NOT_REGISTERED){
+            logActivity("orderBlocking hook has blocked an order from unverified email address {$vars['email']}");
             return array("You must <a href='/register.php'>register an account</a> and verify your e-mail before you can place an order.");
         }
     }
     else{ //Client Exists
         if (BLOCK_UNVERIFIED_EMAILS && $client->isEmailAddressVerified()==false) {
-                return array("You must verify  your e-mail address before you can checkout.");
+            logActivity("orderBlocking hook has blocked an order from unverified email address {$vars['loginemail']}");
+            return array("You must verify  your e-mail address before you can checkout.");
         }
         if (BLOCK_CLIENT_GROUP && $vars['clientid'] > 0){
             $clientgroup = Capsule::table('tblclients')
@@ -39,6 +41,7 @@ add_hook("ShoppingCartValidateCheckout", 1, function($vars){
                 ->value('groupname');
 
             if (BLOCK_CLIENT_GROUP == $clientgroup){
+                logActivity("orderBlocking hook has blocked an order from client with email address {$vars['loginemail']} for being in client group " . BLOCK_CLIENT_GROUP);
                 return array("Your account has been blocked from placing new orders. To appeal, please <a href='submitticket.php?step=2&deptid=1'>open a ticket</a>.");
             }
         }
