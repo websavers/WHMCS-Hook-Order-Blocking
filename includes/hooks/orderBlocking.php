@@ -15,7 +15,7 @@ if (!defined("WHMCS"))
         die("This file cannot be accessed directly");
 
 # Allow clients with unverified e-mails to place orders?
-define("BLOCK_UNVERIFIED_EMAILS", true);
+define("BLOCK_UNVERIFIED_EMAILS", false);
 # If brand new client, force going to registration page first and verifying email (extra steps)
 define("BLOCK_IF_NOT_REGISTERED", false);
 # Block based on client group - if admin has blocked the client from placing orders, like if suspected of fraud
