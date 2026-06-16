@@ -38,7 +38,7 @@ add_hook("ShoppingCartValidateCheckout", 1, function($vars){
         }
     }
     else{ //Client Exists
-        if (BLOCK_UNVERIFIED_EMAILS && $client->isEmailAddressVerified()==false) {
+        if (BLOCK_UNVERIFIED_EMAILS && $client->isEmailAddressVerified() == false) {
             logActivity("orderBlocking hook has blocked an order from unverified email address {$vars['loginemail']}");
             return array("You must verify  your e-mail address before you can checkout.");
         }
