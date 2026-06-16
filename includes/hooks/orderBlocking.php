@@ -42,11 +42,11 @@ add_hook("ShoppingCartValidateCheckout", 1, function($vars){
             logActivity("orderBlocking hook has blocked an order from unverified email address {$vars['loginemail']}");
             return array("You must verify  your e-mail address before you can checkout.");
         }
-        if (BLOCK_CLIENT_GROUP && $vars['clientid'] > 0){
+        if (BLOCK_CLIENT_GROUP && $vars['clientId'] > 0){
             $clientgroup = Capsule::table('tblclients')
                 ->join('tblclientgroups', 'tblclients.groupid', '=', 'tblclientgroups.id')
-                ->where('tblclients.id', $vars['clientid'])
-                ->value('groupname');
+                ->where('tblclients.id', $vars['clientId'])
+                ->value('tblclientgroups.groupname');
 
             if (BLOCK_CLIENT_GROUP == $clientgroup){
                 logActivity("orderBlocking hook has blocked an order from client with email address {$vars['loginemail']} for being in client group " . BLOCK_CLIENT_GROUP);
