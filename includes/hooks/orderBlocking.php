@@ -24,11 +24,11 @@ define("BLOCK_UNVERIFIED_EMAILS", false);
 # If brand new client, force going to registration page first and verifying email (extra steps)
 define("BLOCK_IF_NOT_REGISTERED", false);
 
-# Block based on client group - if admin has blocked the client from placing orders, like if suspected of fraud
-define("BLOCK_CLIENT_GROUP", 'Suspicious');
-
 # This controls whether to send the notification that the order has been held for fraud. You must create an email template called 'Order Fraudulent'
 define("FRAUD_SEND_EMAIL", true);
+
+# Block based on client group - if admin has blocked the client from placing orders, like if suspected of fraud
+define("BLOCK_CLIENT_GROUP", 'Suspicious');
 
 # For fraud orders, close client, or set group as suspicious? Note: close will only happen if there's no active products/domains
 define("FRAUD_CLOSE_OR_GROUP", 'group'); //options: 'close', 'group', false
@@ -121,8 +121,8 @@ add_hook('FraudCheckFailed', 1, function($vars){
         case 'group':
 
             $group_id = Capsule::table('tblclientgroups')->where('groupname', BLOCK_CLIENT_GROUP)->value('id');
-            localAPI('UpdateClient', array('groupid' => $group_id));
-            logActivity("orderBlocking hook has assigned group $group_id to client $client_id");
+            localAPI('UpdateClient', array('clientid' => $client_id, 'groupid' => $group_id));
+            logActivity("orderBlocking hook has assigned group " . BLOCK_CLIENT_GROUP . " to client $client_id");
 
             break;
 
