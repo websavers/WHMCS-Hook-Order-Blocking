@@ -20,12 +20,16 @@ if (!defined("WHMCS"))
 
 # Allow clients with unverified e-mails to place orders?
 define("BLOCK_UNVERIFIED_EMAILS", false);
+
 # If brand new client, force going to registration page first and verifying email (extra steps)
 define("BLOCK_IF_NOT_REGISTERED", false);
+
 # Block based on client group - if admin has blocked the client from placing orders, like if suspected of fraud
 define("BLOCK_CLIENT_GROUP", 'Suspicious');
+
 # This controls whether to send the notification that the order has been held for fraud. You must create an email template called 'Order Fraudulent'
 define("FRAUD_SEND_EMAIL", true);
+
 # For fraud orders, close client, or set group as suspicious? Note: close will only happen if there's no active products/domains
 define("FRAUD_CLOSE_OR_GROUP", 'group'); //options: 'close', 'group', false
 
@@ -72,6 +76,7 @@ add_hook('EmailPreSend', 1, function($vars){
 		if ($response['result'] === 'success'){
 			if ($response['orders']['order']['0']['status'] === 'Fraud'){ //can only be 1 order thanks to relid above
 				//logActivity("Fraud Order: " . $response['orders']['order']['0']['id']); ///DEBUG
+                logActivity("orderBlocking hook has suppressed the order confirmation email for order ID $orderid");
 				return array('abortsend' => true); //waboom
 			}
 		}
@@ -108,6 +113,7 @@ add_hook('FraudCheckFailed', 1, function($vars){
 
             if ($num_products == 0 && $num_domains == 0){
                 localAPI('CloseClient', array('clientid' => $client_id));
+                logActivity("orderBlocking hook has closed client $client_id");
             }
 
             break;
@@ -115,8 +121,8 @@ add_hook('FraudCheckFailed', 1, function($vars){
         case 'group':
 
             $group_id = Capsule::table('tblclientgroups')->where('groupname', BLOCK_CLIENT_GROUP)->value('id');
-            
             localAPI('UpdateClient', array('groupid' => $group_id));
+            logActivity("orderBlocking hook has assigned group $group_id to client $client_id");
 
             break;
 
